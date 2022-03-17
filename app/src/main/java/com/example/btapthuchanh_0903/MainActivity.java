@@ -1,9 +1,11 @@
 package com.example.btapthuchanh_0903;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Adapter;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Devices> arrNoSelected;
     DeviceAdapter adapter;
 
+    int REQUEST_CODE_ADD = 101;
     int posSelected = -1;
 
     @Override
@@ -49,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
         arrDevices.add(new Devices(0, "iPhone 13", "Điện thoại", R.drawable.i_phone_13, false));
         arrDevices.add(new Devices(1, "iPhone 13", "Điện thoại", R.drawable.i_phone_13, false));
+        arrDevices.add(new Devices(2, "iPhone 13", "Điện thoại", R.drawable.i_phone_13, false));
+        arrDevices.add(new Devices(3, "iPhone 13", "Điện thoại", R.drawable.i_phone_13, false));
 
         adapter = new DeviceAdapter(MainActivity.this, arrDevices, new onSwitch() {
             @Override
@@ -92,6 +97,30 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, AddDevice.class);
+                startActivityForResult(intent, REQUEST_CODE_ADD);
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Bundle bundle = data.getExtras();
+
+        int id = Integer.parseInt(bundle.getString("Id"));
+        int image = bundle.getInt("image");
+        String name = bundle.getString("Name");
+        String des = bundle.getString("des");
+
+        if (requestCode == 101) {
+            arrDevices.add(new Devices(id, name, des, image, false));
+            adapter.notifyDataSetChanged();
+        }
 
     }
 }

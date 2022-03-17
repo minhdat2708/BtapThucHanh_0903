@@ -1,9 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AddDevice">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/txtTitle"
+        android:text="Thêm thiết bị"
+        android:textSize="30sp"
+        android:layout_marginTop="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/edtId"
+        android:hint="Nhập mã của thiết bị"
+        android:textSize="20sp"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/txtTitle"
+        android:layout_width="match_parent"
+        android:inputType="number"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/edtName"
+        android:hint="Nhập tên của thiết bị"
+        android:textSize="20sp"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/edtId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/edtDescription"
+        android:hint="Miêu tả về thiết bị"
+        android:textSize="20sp"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/edtName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/imgSubDevice"
+        android:layout_width="250dp"
+        android:layout_height="150dp"
+        android:layout_below="@id/edtDescription"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp"
+        android:contentDescription="@string/app_name" />
+
+    <Button
+        android:id="@+id/btnSelect"
+        android:textSize="17sp"
+        android:text="Chọn ảnh"
+        android:layout_toRightOf="@+id/imgSubDevice"
+        android:layout_above="@id/btnSubAdd"
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/btnSubAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imgSubDevice"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:text="Thêm"
+        android:textSize="17sp" />
+
+</RelativeLayout>

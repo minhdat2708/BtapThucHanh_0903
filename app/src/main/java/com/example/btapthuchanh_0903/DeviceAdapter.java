@@ -71,7 +71,6 @@ public class DeviceAdapter extends BaseAdapter implements onSwitch{
                 }
             });
         }
-
         return view;
     }
 }
