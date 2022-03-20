@@ -1,5 +1,6 @@
 package com.example.btapthuchanh_0903;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,10 +8,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -30,8 +36,10 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Devices> arrDevices;
     ArrayList<Devices> arrNoSelected;
     DeviceAdapter adapter;
+    DeviceDB deviceDB;
 
     int REQUEST_CODE_ADD = 101;
+    int REQUEST_CODE_EDIT = 102;
     int posSelected = -1;
 
     @Override
@@ -50,18 +58,27 @@ public class MainActivity extends AppCompatActivity {
         arrDevices = new ArrayList<>();
         arrNoSelected = new ArrayList<>();
 
-        arrDevices.add(new Devices(0, "iPhone 13", "Điện thoại", R.drawable.i_phone_13, false));
-        arrDevices.add(new Devices(1, "iPhone 13", "Điện thoại", R.drawable.i_phone_13, false));
-        arrDevices.add(new Devices(2, "iPhone 13", "Điện thoại", R.drawable.i_phone_13, false));
-        arrDevices.add(new Devices(3, "iPhone 13", "Điện thoại", R.drawable.i_phone_13, false));
+        registerForContextMenu(lsvDevice);
+
+
+        deviceDB = new DeviceDB(MainActivity.this);
+
+
+        arrDevices = deviceDB.getAllDevices();
+
+        Toast.makeText(this, String.valueOf(arrDevices.size()), Toast.LENGTH_SHORT).show();
+
+
+//        arrDevices.add(new Devices(0, "iPhone 13", "Điện thoại", R.drawable.i_phone_13, true));
+//        arrDevices.add(new Devices(1, "iPhone 13", "Điện thoại", R.drawable.i_phone_13, true));
 
         adapter = new DeviceAdapter(MainActivity.this, arrDevices, new onSwitch() {
             @Override
             public void onSwitchItem(Devices devices, Boolean isChecked) {
-                if (!isChecked) {
-                    arrNoSelected.add(devices);
-                } else {
+                if (isChecked) {
                     arrNoSelected.remove(devices);
+                } else {
+                    arrNoSelected.add(devices);
                 }
             }
         });
@@ -79,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             for (Devices devices:arrNoSelected) {
+                                deviceDB.deleteDevice(devices.getId());
                                 arrDevices.remove(devices);
                                 adapter.notifyDataSetChanged();
                             }
@@ -105,6 +123,15 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_CODE_ADD);
             }
         });
+
+        lsvDevice.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                posSelected = i;
+                Toast.makeText(MainActivity.this, String.valueOf(i), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
     }
 
     @Override
@@ -113,14 +140,47 @@ public class MainActivity extends AppCompatActivity {
         Bundle bundle = data.getExtras();
 
         int id = Integer.parseInt(bundle.getString("Id"));
-        int image = bundle.getInt("image");
+        int image = bundle.getInt("Image");
         String name = bundle.getString("Name");
         String des = bundle.getString("des");
 
-        if (requestCode == 101) {
-            arrDevices.add(new Devices(id, name, des, image, false));
-            adapter.notifyDataSetChanged();
+
+        if (requestCode == REQUEST_CODE_ADD) {
+            arrDevices.add(new Devices(id, name, des, image, true));
+            deviceDB.addDevice(new Devices(id, name, des, image, true));
         }
 
+        if (requestCode == REQUEST_CODE_EDIT) {
+
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        MenuInflater inflater = new MenuInflater(MainActivity.this);
+        inflater.inflate(R.menu.menu_item, menu);
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.mnuEdit:
+                Intent intent = new Intent(MainActivity.this, AddDevice.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("id", arrDevices.get(posSelected).getId());
+                bundle.putString("name", arrDevices.get(posSelected).getName());
+                bundle.putInt("image", arrDevices.get(posSelected).getImage());
+                bundle.putString("description", arrDevices.get(posSelected).getDescription());
+                intent.putExtras(bundle);
+
+                startActivityForResult(intent, REQUEST_CODE_EDIT);
+//                Toast.makeText(this, "Edit Successful", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.mnuDelete:
+                Toast.makeText(this, "Delete Successful", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return super.onContextItemSelected(item);
     }
 }

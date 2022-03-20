@@ -5,7 +5,7 @@ public class Devices {
     private String name;
     private String description;
     private int image;
-    boolean status;
+    private boolean status;
 
     public Devices(int id, String name, String description, int image, boolean status) {
         this.id = id;

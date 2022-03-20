@@ -1,5 +1,6 @@
 package com.example.btapthuchanh_0903;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -25,7 +26,12 @@ public class AddDevice extends AppCompatActivity {
     ImageView image;
     EditText edtId, edtName, edtDes;
 
+    int img;
+
     int REQUEST_CODE_ADD_DEVICE = 101;
+    int REQUEST_CODE_EDIT_DEVICE = 101;
+    int REQUEST_CODE_SELECT_IMG = 201;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,17 +45,26 @@ public class AddDevice extends AppCompatActivity {
         edtName = findViewById(R.id.edtName);
         edtDes = findViewById(R.id.edtDescription);
 
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+        if (bundle != null) {
+            int id = bundle.getInt("id");
+            String name = bundle.getString("name");
+            String description = bundle.getString("description");
+            int image1 = bundle.getInt("image");
+
+            edtId.setText(String.valueOf(id));
+            edtName.setText(name);
+            edtDes.setText(description);
+            image.setImageResource(image1);
+            btnSubAdd.setText("Chỉnh sửa");
+        }
+
         btnSelectImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                try {
-//                    URL url = new URL("D:\\Android\\AndroidProject\\BtapThucHanh_0903\\app\\src\\main\\res\\drawable");
-//                    Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-//                    image.setImageBitmap(bmp);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-                image.setImageDrawable(getDrawable(R.drawable.i_phone_13));
+                Intent intent = new Intent(AddDevice.this, ImageDevice.class);
+                startActivityForResult(intent, REQUEST_CODE_SELECT_IMG);
             }
         });
 
@@ -60,7 +75,6 @@ public class AddDevice extends AppCompatActivity {
                     String des = edtDes.getText().toString();
                     String id = edtId.getText().toString();
                     String name = edtName.getText().toString();
-                    Drawable img = image.getDrawable();
 
                     Intent intent = getIntent();
                     Bundle bundle = new Bundle();
@@ -68,14 +82,31 @@ public class AddDevice extends AppCompatActivity {
                     bundle.putString("Id", id);
                     bundle.putString("Name", name);
                     bundle.putString("des", des);
+                    bundle.putInt("Image", img);
 
                     intent.putExtras(bundle);
                     setResult(REQUEST_CODE_ADD_DEVICE, intent);
+
+                    if (btnSubAdd.getText() == "Edit") {
+                        setResult(REQUEST_CODE_EDIT_DEVICE, intent);
+                    }
 
                     finish();
                 }
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if (requestCode ==  201 && resultCode == RESULT_OK && data != null) {
+            int imageResult = data.getIntExtra("image", R.drawable.notfound);
+            img = imageResult;
+            image.setImageResource(img);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private boolean checked () {
